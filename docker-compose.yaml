@@ -1,0 +1,41 @@
+version: '3.4'
+
+services:
+  arangodb:
+    container_name: api-tcc-arangodb
+    image: arangodb:latest
+    environment:
+      ARANGO_ROOT_PASSWORD: rootpassword
+    ports:
+      - 8529:8529
+    volumes:
+      - arangodb_data_container:/var/lib/arangodb3
+      - arangodb_apps_data_container:/var/lib/arangodb3-apps
+      - /etc/localtime:/etc/localtime
+    networks:
+      - tcc-network
+
+  api-tcc:
+    container_name: api-tcc
+    build: .
+    command: [ "uvicorn", "app.api:api.app", "--host", "0.0.0.0", "--port", "6000", "--workers", "4" ]
+    ports:
+      - "6000:6000"
+    environment:
+      LOG_LEVEL: INFO
+      ARANGODB_HOST: arangodb
+      ARANGODB_PORT: 8529
+      ARANGODB_USER: root
+      ARANGODB_PASSWORD: rootpassword
+    depends_on:
+      - arangodb
+    networks:
+      - tcc-network
+
+volumes:
+  arangodb_data_container:
+  arangodb_apps_data_container:
+
+networks:
+  tcc-network:
+    driver: bridge
