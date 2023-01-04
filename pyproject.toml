@@ -13,8 +13,8 @@ packages = [
 python = "^3.8"
 fastapi = "^0.85.0"
 uvicorn = "^0.18.3"
-pyArango = "^2.0.1"
 python-dotenv = "^0.21.0"
+pyArango = "^2.0.1"
 
 [tool.poetry.dev-dependencies]
 black = "^22.8.0"

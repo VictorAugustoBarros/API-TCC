@@ -1,14 +1,16 @@
+from pydantic import BaseModel
 from app.connections.arangodb import ArangoDB
-from dataclasses import dataclass, asdict
 
 
-@dataclass
-class User:
+class UserLogin(BaseModel):
     email: str
-    username: str
     password: str
 
-    key: str = None
+
+class User(BaseModel):
+    email: str
+    password: str
+    username: str
 
 
 class UsersModel(ArangoDB):
@@ -16,29 +18,27 @@ class UsersModel(ArangoDB):
         collection = "Users"
         super().__init__(collection=collection)
 
+    def validate_user(self, email: str, password: str) -> dict:
+        for user in self.collection.fetchAll():
+            if user.email == email and user.password == password:
+                return {"key": user._key, "username": user.username, "email": user.email, "login": True}
+
+        return {
+            "login": False
+        }
+
     def get_user(self, user_key: str):
         user = self.collection[user_key]
-        user = User(
-            email=user.email,
-            username=user.username,
-            password=user.password,
-            key=user._key,
-        )
-        return asdict(user)
+        if user:
+            return {"email": user.email, "username": user.username, "key": user._key}
+
+        return {}
 
     def get_users(self):
         users = []
         for user in self.collection.fetchAll():
-            users.append(
-                asdict(
-                    User(
-                        key=user._key,
-                        email=user.email,
-                        username=user.username,
-                        password=user.password,
-                    )
-                )
-            )
+            users.append({"key": user._key, "username": user.username, "email": user.email, "password": user.password})
+
         return users
 
     def insert_user(self, email: str, username: str, password: str):
