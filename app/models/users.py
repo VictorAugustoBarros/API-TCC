@@ -18,43 +18,32 @@ class UsersModel(ArangoDB):
         collection = "Users"
         super().__init__(collection=collection)
 
-    def validate_user(self, email: str, password: str) -> dict:
-        for user in self.collection.fetchAll():
-            if user.email == email and user.password == password:
-                return {"key": user._key, "username": user.username, "email": user.email, "login": True}
+    def get_all_users(self):
+        return self.fetch_all()
 
-        return {
-            "login": False
-        }
+    def get_user_by_key(self, key):
+        return self.fetch_one(key=key)
 
-    def get_user(self, user_key: str):
-        user = self.collection[user_key]
-        if user:
-            return {"email": user.email, "username": user.username, "key": user._key}
-
-        return {}
-
-    def get_users(self):
-        users = []
-        for user in self.collection.fetchAll():
-            users.append({"key": user._key, "username": user.username, "email": user.email, "password": user.password})
-
-        return users
+    def get_user_by_document(self, document: dict):
+        rows = self.fetch_one_document(document=document)
+        for row in rows:
+            return row
 
     def insert_user(self, email: str, username: str, password: str):
-        user = self.collection.createDocument()
-        user["email"] = email
-        user["username"] = username
-        user["password"] = password
-        user.save()
+        self.insert_document(
+            document={
+                "email": email,
+                "username": username,
+                "password": password,
+            }
+        )
 
-    def update_user(self, user_key: str, email: str, username: str, password: str):
-        user = self.collection[user_key]
-        user["email"] = email
-        user["username"] = username
-        user["password"] = password
-        user.save()
+    def update_user(self, key: str, user: dict):
+        self.update_document(document_key=key, new_data=user)
 
-    def delete_user(self, user_key: str):
-        user = self.collection[user_key]
-        user.delete()
+    def delete_user(self, key: str):
+        self.delete_document(document_key=key)
+
+    def validate_login(self, user: dict) -> dict:
+        result = self.fetch_one_document(document=user)
+        print(result)

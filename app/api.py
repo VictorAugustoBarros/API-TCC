@@ -1,33 +1,25 @@
+"""API STEVIE."""
 import uvicorn
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from app.routes.users import routes_users
-from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
 
 
-class Api:
-    def __init__(self):
-        self.app = FastAPI()
-        self.port = 8000
-        self.create_routes()
-        self.cors()
+def create_app():
+    """create_app function."""
+    app.include_router(routes_users)
 
-    def create_routes(self):
-        self.app.include_router(routes_users)
+    @app.get("/healthcheck")
+    def health_check():
+        """Função para checar a saúde da api."""
+        return JSONResponse(status_code=200, content={"status": "active"})
 
-    def cors(self):
-        self.app.add_middleware(
-            CORSMiddleware,
-            allow_origins=["*"],
-            allow_credentials=True,
-            allow_methods=["*"],
-            allow_headers=["*"],
-        )
-
-    def run(self):
-        uvicorn.run(app=self.app, port=self.port)
+    return app
 
 
-api = Api()
+create_app()
 
 if __name__ == "__main__":
-    api.run()
+    uvicorn.run("app.api:app", host="0.0.0.0", port=8000)

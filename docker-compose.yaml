@@ -27,6 +27,7 @@ services:
       ARANGODB_PORT: 8529
       ARANGODB_USER: root
       ARANGODB_PASSWORD: rootpassword
+      ARANGODB_DATABASE: TCC
     depends_on:
       - arangodb
     networks:
