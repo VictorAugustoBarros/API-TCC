@@ -20,7 +20,9 @@ async def get_users():
     users_model = UsersModel()
     users = users_model.get_all_users()
     if not users:
-        return JSONResponse(status_code=200, content={"message": "Usuários não cadastrados!"})
+        return JSONResponse(
+            status_code=200, content={"message": "Usuários não cadastrados!"}
+        )
 
     return JSONResponse(status_code=200, content=users)
 
@@ -30,7 +32,9 @@ async def get_user(key: str):
     users_model = UsersModel()
     user = users_model.get_user_by_key(key=key)
     if not user:
-        return JSONResponse(status_code=200, content={"message": "Usuário não encontrado!"})
+        return JSONResponse(
+            status_code=200, content={"message": "Usuário não encontrado!"}
+        )
 
     return JSONResponse(status_code=200, content=user)
 

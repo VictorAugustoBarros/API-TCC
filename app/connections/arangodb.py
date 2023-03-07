@@ -1,12 +1,21 @@
 from pyArango.connection import *
 from pyArango.collection import DocumentNotFoundError
-from app.utils.credentials import arango_host, arango_user, arango_password, arango_port, arango_database
+from app.utils.credentials import (
+    arango_host,
+    arango_user,
+    arango_password,
+    arango_port,
+    arango_database,
+)
 
 
 class ArangoDB:
     def __init__(self, collection: str):
-        self.conn = Connection(username=arango_user, password=arango_password,
-                               arangoURL=f"http://{arango_host}:{arango_port}")
+        self.conn = Connection(
+            username=arango_user,
+            password=arango_password,
+            arangoURL=f"http://{arango_host}:{arango_port}",
+        )
         self.db = self.conn[arango_database]
         self.collection = collection
         self.create_collection(collection_name=self.collection)
@@ -44,7 +53,9 @@ class ArangoDB:
     def fetch_one_document(self, document: dict):
         collection = self.db[self.collection]
         try:
-            return collection.fetchByExample(document, batchSize=20, count=True, rawResults=True)
+            return collection.fetchByExample(
+                document, batchSize=20, count=True, rawResults=True
+            )
 
         except DocumentNotFoundError:
             return None
