@@ -51,9 +51,7 @@ user_1_criterias = {
     ("Avaliacao", "Experiencia"): 1 / 3,
     ("Avaliacao", "Avaliacao"): 1,
 }
-criteria1 = ahpy.Compare(
-    "User1", user_1_criterias, random_index="saaty"
-)
+criteria1 = ahpy.Compare("User1", user_1_criterias, random_index="saaty")
 
 user_2_criterias = {
     ("Esforco", "Esforco"): 1,
@@ -82,9 +80,7 @@ user_2_criterias = {
     ("Avaliacao", "Experiencia"): 1 / 3,
     ("Avaliacao", "Avaliacao"): 1,
 }
-criteria2 = ahpy.Compare(
-    "User2", user_2_criterias, random_index="saaty"
-)
+criteria2 = ahpy.Compare("User2", user_2_criterias, random_index="saaty")
 
 user_3_criterias = {
     ("Esforco", "Esforco"): 1,
@@ -113,9 +109,7 @@ user_3_criterias = {
     ("Avaliacao", "Experiencia"): 1 / 3,
     ("Avaliacao", "Avaliacao"): 1,
 }
-criteria3 = ahpy.Compare(
-    "User3", user_3_criterias, random_index="saaty"
-)
+criteria3 = ahpy.Compare("User3", user_3_criterias, random_index="saaty")
 
 print("-------------------------------------------------------------------")
 print(criteria1.target_weights)
@@ -126,18 +120,18 @@ users = [
     {
         "user": "user1",
         "weights": sum([criteria for criteria in criteria1.target_weights.values()]),
-        "consistency": criteria1.consistency_ratio
+        "consistency": criteria1.consistency_ratio,
     },
     {
         "user": "user2",
         "weights": sum([criteria for criteria in criteria2.target_weights.values()]),
-        "consistency": criteria2.consistency_ratio
+        "consistency": criteria2.consistency_ratio,
     },
     {
         "user": "user3",
         "weights": sum([criteria for criteria in criteria3.target_weights.values()]),
-        "consistency": criteria3.consistency_ratio
-    }
+        "consistency": criteria3.consistency_ratio,
+    },
 ]
 
 maior_valor = max([user.get("weights") for user in users])
