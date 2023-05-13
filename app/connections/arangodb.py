@@ -1,5 +1,4 @@
-from pyArango.connection import *
-from pyArango.collection import DocumentNotFoundError
+from pyArango.connection import Connection, CreationError
 from app.utils.credentials import (
     arango_host,
     arango_user,
@@ -11,68 +10,45 @@ from app.utils.credentials import (
 
 class ArangoDB:
     def __init__(self, collection: str):
-        self.conn = Connection(
+        self.collection = collection
+        conn = Connection(
             username=arango_user,
             password=arango_password,
-            arangoURL=f"http://{arango_host}:{arango_port}",
+            verify=False
         )
-        self.db = self.conn[arango_database]
-        self.collection = collection
-        self.create_collection(collection_name=self.collection)
+        self.db = conn[arango_database]
+        self.create_collection(collection_name=collection)
+        self.collection = self.db[collection]
 
-    def create_collection(self, collection_name):
-        if collection_name not in self.db.collections:
+    def create_collection(self, collection_name: str):
+        try:
             self.db.createCollection(name=collection_name)
+        except CreationError:
+            pass
 
-    def insert_document(self, document: dict):
-        collection = self.db[self.collection]
-        document_model = collection.createDocument()
-        for name, doc in document.items():
-            document_model[name] = doc
-        document_model.save()
+    def find(self, data: dict):
+        aql_data = []
+        for key, value in data.items():
+            aql_data.append(f"FILTER doc.{key} == '{value}'")
 
-    def update_document(self, document_key: str, new_data: dict):
-        collection = self.db[self.collection]
-        document = collection[document_key]
-        document.set(new_data)
-        document.patch()
+        aql = f"FOR doc IN {self.collection.name} {''.join(aql_data)} RETURN doc"
+        if response := self.db.AQLQuery(aql):
+            return response[0]
 
-    def delete_document(self, document_key):
-        collection = self.db[self.collection]
-        document = collection[document_key]
-        document.delete()
+        return None
 
-    def fetch_one(self, key: str):
-        collection = self.db[self.collection]
-        try:
-            return collection.fetchDocument(key=key, rawResults=True)
+    def insert(self, **kwargs):
+        doc1 = self.collection.createDocument()
+        for key, value in kwargs.items():
+            doc1[key] = value
+        doc1.save()
 
-        except DocumentNotFoundError:
-            return None
+    def update(self, key: str, data: dict):
+        key_value = {"_key": key}
+        aql = f"UPDATE {key_value} WITH {data} IN {self.collection.name}"
+        self.db.AQLQuery(aql)
 
-    def fetch_one_document(self, document: dict):
-        collection = self.db[self.collection]
-        try:
-            return collection.fetchByExample(
-                document, batchSize=20, count=True, rawResults=True
-            )
-
-        except DocumentNotFoundError:
-            return None
-
-    def fetch_all(self):
-        collection = self.db[self.collection]
-        rows = collection.fetchAll(rawResults=True)
-        result = []
-        for row in rows:
-            result.append(row)
-
-        return result
-
-    def aql_query(self, aql: str):
-        rows = self.db.AQLQuery(aql, rawResults=True)
-        result = []
-        for row in rows:
-            result.append(row)
-
-        return result
+    def delete(self, key: str):
+        key_value = {"_key": key}
+        aql = f"REMOVE {key_value} IN {self.collection.name}"
+        self.db.AQLQuery(aql)
