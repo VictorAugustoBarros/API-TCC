@@ -1,18 +1,18 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from app.models.users import UsersModel, User
+from app.models.users import UsersModel, User, LoginUser
 
 routes_users = APIRouter()
 
 
 @routes_users.post("/users/login")
-async def login(user: User):
+async def login(login_user: LoginUser):
     user_model = UsersModel()
-    user = user_model.find_user_login(user=user)
+    user = user_model.find_user_login(login_user=login_user)
     if not user:
         return JSONResponse(status_code=200, content={})
 
-    return JSONResponse(status_code=200, content=user)
+    return JSONResponse(status_code=200, content={"user_id": user._id})
 
 
 @routes_users.get("/users/{key}")

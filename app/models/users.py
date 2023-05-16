@@ -2,11 +2,20 @@ from pydantic import BaseModel
 from app.connections.arangodb import ArangoDB
 
 
+class LoginUser(BaseModel):
+    email: str
+    password: str
+
+
 class User(BaseModel):
     name: str
     email: str
     password: str
     username: str
+    followers: int = 0
+    following: int = 0
+    posts: int = []
+    objetivos: list = []
     _key: str = None
 
 
@@ -35,5 +44,5 @@ class UsersModel(ArangoDB):
     def delete_user(self, key: str):
         self.delete(key=key)
 
-    def find_user_login(self, user: User):
-        return self.find(data={"email": user.email, "password": user.password})
+    def find_user_login(self, login_user: LoginUser):
+        return self.find(data={"email": login_user.email, "password": login_user.password})
