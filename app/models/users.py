@@ -14,8 +14,6 @@ class User(BaseModel):
     username: str
     followers: int = 0
     following: int = 0
-    posts: int = []
-    objetivos: list = []
     _key: str = None
 
 
@@ -24,7 +22,7 @@ class UsersModel(ArangoDB):
         super().__init__(collection="Users")
 
     def insert_user(self, user: User):
-        self.insert(**user.__dict__)
+        return self.insert(**user.__dict__)
 
     def find_user_by_name(self, username: str):
         return self.find(data={"name": username})
@@ -35,8 +33,11 @@ class UsersModel(ArangoDB):
     def find_user_by_username(self, username: str):
         return self.find(data={"username": username})
 
-    def find_user_by_key(self, key: str):
-        return self.find(data={"_key": key})
+    def find_user_by_id(self, user_id: str):
+        user = self.find(data={"_id": user_id})
+        if user:
+            return user[0]
+        return user
 
     def update_user(self, key: str, user: dict):
         self.update(key=key, data=user.__dict__)
@@ -45,4 +46,8 @@ class UsersModel(ArangoDB):
         self.delete(key=key)
 
     def find_user_login(self, login_user: LoginUser):
-        return self.find(data={"email": login_user.email, "password": login_user.password})
+        user = self.find(data={"email": login_user.email, "password": login_user.password})
+        if user:
+            return user[0]
+        return user
+

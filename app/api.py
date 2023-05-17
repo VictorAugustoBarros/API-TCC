@@ -2,16 +2,17 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+
 from app.routes.users import routes_users
 from app.routes.criterios import routes_criterios
-from fastapi.middleware.cors import CORSMiddleware
+from app.routes.objetivos import routes_objetivos
 
 app = FastAPI()
 origins = [
     "http://localhost",
     "http://localhost:8000",
-    "http://localhost:3001",
-
+    "http://localhost:3001"
 ]
 
 app.add_middleware(
@@ -27,6 +28,7 @@ def create_app():
     """create_app function."""
     app.include_router(routes_users)
     app.include_router(routes_criterios)
+    app.include_router(routes_objetivos)
 
     @app.get("/healthcheck")
     def health_check():
