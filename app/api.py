@@ -7,6 +7,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routes.users import routes_users
 from app.routes.criterios import routes_criterios
 from app.routes.objetivos import routes_objetivos
+from app.routes.user_amigos import routes_user_amigos
+from app.routes.login import routes_login
 
 app = FastAPI()
 origins = [
@@ -29,6 +31,8 @@ def create_app():
     app.include_router(routes_users)
     app.include_router(routes_criterios)
     app.include_router(routes_objetivos)
+    app.include_router(routes_user_amigos)
+    app.include_router(routes_login)
 
     @app.get("/healthcheck")
     def health_check():
