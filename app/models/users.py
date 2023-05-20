@@ -33,6 +33,12 @@ class UsersModel(ArangoDB):
     def find_user_by_username(self, username: str):
         return self.find(data={"username": username})
 
+    def find_user_by_key(self, user_key: str):
+        user = self.find(data={"_key": user_key})
+        if user:
+            return user[0]
+        return user
+
     def find_user_by_id(self, user_id: str):
         user = self.find(data={"_id": user_id})
         if user:

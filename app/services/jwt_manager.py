@@ -1,5 +1,7 @@
 import jwt
+from fastapi.responses import JSONResponse
 from datetime import datetime, timedelta
+
 
 class JwtManager:
     def __init__(self):
@@ -13,11 +15,11 @@ class JwtManager:
         try:
             return jwt.decode(token, self.secret_key, algorithms=['HS256'])
 
-        except jwt.ExpiredSignatureError:
-            pass
-        except jwt.InvalidTokenError:
-            pass
+        except jwt.exceptions.ExpiredSignatureError:
+            return JSONResponse(status_code=401, content={"error": 'Token Expirado!'})
 
-        return None
+        except jwt.exceptions.InvalidTokenError:
+            return JSONResponse(status_code=401, content={"error": 'Token Inválido!'})
 
-
+        except Exception:
+            return JSONResponse(status_code=401, content={"error": 'Falha na autenticação do Token!'})

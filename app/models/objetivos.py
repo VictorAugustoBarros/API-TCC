@@ -8,10 +8,9 @@ class Objetivo(BaseModel):
     titulo: str
     categoria: str
     descricao: str
-    user_id: str
-    imagem: str = None
-    data_criacao: str = None
-    _key: str = None
+    imagem: str
+    data_fim: str
+    data_inicio: str = datetime.now()
 
 
 class ObjetivosModel(ArangoDB):
@@ -19,5 +18,4 @@ class ObjetivosModel(ArangoDB):
         super().__init__(collection="Objetivos")
 
     def insert_objetivo(self, objetivo: Objetivo):
-        objetivo.data_criacao = datetime.now()
         return self.insert(**objetivo.__dict__)

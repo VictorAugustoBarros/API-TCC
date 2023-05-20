@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from app.models.users import UsersModel, User, LoginUser
+from models.users_amigos import UsersAmigosModel
+from services.jwt_manager import JwtManager
 
 routes_users = APIRouter()
 
@@ -42,28 +44,41 @@ async def create_user(user: User):
     )
 
 
-@routes_users.post("/users/login")
-async def login(login_user: LoginUser):
-    user_model = UsersModel()
-    user = user_model.find_user_login(login_user=login_user)
-    if not user:
-        return JSONResponse(status_code=200, content={})
-
-    return JSONResponse(status_code=200, content={"user_id": user.get("_id")})
-
-
-@routes_users.post("/users/id")
+@routes_users.get("/users")
 async def get_user(request: Request):
-    user_request = await request.json()
+    if not (token := request.headers.get("token")):
+        return JSONResponse(
+            status_code=401, content={"message": "Favor informar o token!"}
+        )
+
+    jwt_manager = JwtManager()
+    user_data = jwt_manager.verify_token(token=token)
+    key = user_data.get("key")
+
     users_model = UsersModel()
 
-    user = users_model.find_user_by_id(user_id=user_request.get("user_id"))
+    user = users_model.find_user_by_key(user_key=key)
     if not user:
         return JSONResponse(
             status_code=200, content={"message": "Usuário não encontrado!"}
         )
 
-    return JSONResponse(status_code=200, content=user)
+    del user["_id"]
+    del user["_rev"]
+    del user["password"]
+    user["key"] = user.pop("_key")
+
+    users_amigos_model = UsersAmigosModel()
+    amigos = users_amigos_model.get_amigos_by_user_id(user_id=user.get("_id"))
+    for amigo in amigos:
+        del amigo["_id"]
+        del amigo["_rev"]
+        amigo["key"] = amigo.pop("_key")
+
+    return JSONResponse(status_code=200, content={
+        "user": user,
+        "amigos": amigos
+    })
 
 
 @routes_users.put("/users/{key}")

@@ -1,3 +1,4 @@
+import jwt
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from app.models.users import UsersModel, LoginUser
@@ -15,21 +16,26 @@ async def login(login_user: LoginUser):
 
     jwt_manager = JwtManager()
     token = jwt_manager.create_token(payload={
+        "id": user.get("_id"),
+        "key": user.get("_key"),
         "email": user.get("email"),
-        "password": user.get("password")
+        "password": user.get("password"),
     })
 
-    return JSONResponse(status_code=200, content={"user": user.get("name"), "token": token})
+    return JSONResponse(status_code=200, content={"token": token})
 
 
 @routes_login.get("/auth/verify")
 async def check_token(request: Request):
     if not (token := request.headers.get("authorization")):
-        return JSONResponse(status_code=400, content='Token não informado')
+        return JSONResponse(status_code=400, content={"error": 'Token não informado!'})
 
     jwt_manager = JwtManager()
     user_data = jwt_manager.verify_token(token=token)
     if not user_data:
-        return JSONResponse(status_code=401, content='Não Autorizado!')
+        return JSONResponse(status_code=401, content={"error": 'Não Autorizado!'})
 
-    return JSONResponse(status_code=200, content=user_data)
+    return JSONResponse(status_code=200, content={"success": True})
+
+
+
