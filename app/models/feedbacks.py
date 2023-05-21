@@ -3,12 +3,28 @@ from dataclasses import dataclass
 from app.connections.arangodb import ArangoDB
 
 
+# Em termos de progresso diário, qual foi o seu desempenho hoje, em uma escala de 1 a 10?
+# Avalie o nível de dificuldade dos desafios enfrentados hoje, em uma escala de 1 a 10.
+# Em uma escala de 1 a 10, qual é a sua satisfação geral com o progresso feito até agora?
+# Quão perto você está de atingir o objetivo, em uma escala de 1 a 10?
+# Avalie a qualidade e a eficácia das ações tomadas hoje, em uma escala de 1 a 10.
+
+
+@dataclass
+class Questoes:
+    questao_progresso: int
+    questao_dificuldade: int
+    questao_satisfacao: int
+    questao_atingimento: int
+    questao_eficacia: int
+
+
 @dataclass
 class Feedbacks:
-    # @TODO -> Pensar no que é necessário salvar no feedback (5 questões???)
+    user_key: str
     objetivo_key: str
-    descricao: str
-    nota_geral: int
+    questoes: Questoes
+    observacoes: str
     data_feedback: str = datetime.strftime(datetime.now(), "%m/%d/%Y %H:%M:%S"),
 
 
@@ -19,6 +35,15 @@ class FeedbacksModel(ArangoDB):
 
     def create_feedback(self, feedback: Feedbacks):
         return self.insert(**feedback.__dict__)
+
+    def find_feedback(self, user_key: str, objetivo_key: str):
+        aql_query = f"""
+            FOR feedback IN {self.collection_name}
+                FILTER feedback.user_key == '{user_key}' AND feedback.objetivo_key == '{objetivo_key}'
+                RETURN feedback
+        """
+        documents = self.aql_query(aql=aql_query)
+        return [document for document in documents]
 
     def delete_feedback(self, feedback_key: str):
         self.delete_by_key(key=feedback_key)
