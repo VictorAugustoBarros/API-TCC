@@ -12,14 +12,14 @@ class UsersAmigosModel(ArangoDB):
         self.collection_name = "UsersAmigos"
         super().__init__(collection=self.collection_name, edge=True)
 
-    def insert_user_amigos(self, user_id: str, amigos_user_id: str):
-        aresta = {
-            "_from": user_id,
-            "_to": amigos_user_id
-        }
+    def insert_user_amigos(self, user_id: str, amigos_id: str):
+        aresta = {"_from": user_id, "_to": amigos_id}
         return self.insert(**aresta)
 
-    def get_amigos_by_user_id(self, user_id: str):
+    def delete_user_amigos(self, user_amigo_key: str):
+        self.delete_by_key(key=user_amigo_key)
+
+    def find_amigos_by_user_id(self, user_id: str):
         aql_query = f"""
                         FOR doc IN {self.collection_name}
                         FILTER doc._from == '{user_id}'

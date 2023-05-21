@@ -8,14 +8,11 @@ from app.routes.users import routes_users
 from app.routes.criterios import routes_criterios
 from app.routes.objetivos import routes_objetivos
 from app.routes.user_amigos import routes_user_amigos
+from app.routes.user_criterios import routes_user_criterios
 from app.routes.login import routes_login
 
 app = FastAPI()
-origins = [
-    "http://localhost",
-    "http://localhost:8000",
-    "http://localhost:3001"
-]
+origins = ["http://localhost", "http://localhost:8000", "http://localhost:3001"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -33,6 +30,7 @@ def create_app():
     app.include_router(routes_objetivos)
     app.include_router(routes_user_amigos)
     app.include_router(routes_login)
+    app.include_router(routes_user_criterios)
 
     @app.get("/healthcheck")
     def health_check():

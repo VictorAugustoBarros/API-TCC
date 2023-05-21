@@ -8,6 +8,14 @@ user1 = {
     "Avaliacao de Usuários": 1,
 }
 
+user4 = {
+    "Nivel de Esforco": 5,
+    "Periodo do Dia": 1,
+    "Faixa de Idade": 1,
+    "Nivel de Experiencia": 2,
+    "Avaliacao de Usuários": 1,
+}
+
 user2 = {
     "Nivel de Esforco": 1,
     "Periodo do Dia": 1,
@@ -52,6 +60,35 @@ user_1_criterias = {
     ("Avaliacao", "Avaliacao"): 1,
 }
 criteria1 = ahpy.Compare("User1", user_1_criterias, random_index="saaty")
+
+user_4_criterias = {
+    ("Esforco", "Esforco"): 1,
+    ("Esforco", "Periodo"): 7,
+    ("Esforco", "Idade"): 5,
+    ("Esforco", "Experiencia"): 1,
+    ("Esforco", "Avaliacao"): 3,
+    ("Periodo", "Esforco"): 1 / 7,
+    ("Periodo", "Periodo"): 1,
+    ("Periodo", "Idade"): 3,
+    ("Periodo", "Experiencia"): 1 / 5,
+    ("Periodo", "Avaliacao"): 1 / 3,
+    ("Idade", "Esforco"): 1 / 5,
+    ("Idade", "Periodo"): 1 / 3,
+    ("Idade", "Idade"): 1,
+    ("Idade", "Experiencia"): 1 / 7,
+    ("Idade", "Avaliacao"): 1 / 5,
+    ("Experiencia", "Esforco"): 1 / 3,
+    ("Experiencia", "Periodo"): 5,
+    ("Experiencia", "Idade"): 7,
+    ("Experiencia", "Experiencia"): 1,
+    ("Experiencia", "Avaliacao"): 3,
+    ("Avaliacao", "Esforco"): 1,
+    ("Avaliacao", "Periodo"): 3,
+    ("Avaliacao", "Idade"): 5,
+    ("Avaliacao", "Experiencia"): 1 / 3,
+    ("Avaliacao", "Avaliacao"): 1,
+}
+criteria4 = ahpy.Compare("User4", user_4_criterias, random_index="saaty")
 
 user_2_criterias = {
     ("Esforco", "Esforco"): 1,
@@ -115,6 +152,7 @@ print("-------------------------------------------------------------------")
 print(criteria1.target_weights)
 print(criteria2.target_weights)
 print(criteria3.target_weights)
+print(criteria4.target_weights)
 
 users = [
     {
@@ -132,9 +170,14 @@ users = [
         "weights": sum([criteria for criteria in criteria3.target_weights.values()]),
         "consistency": criteria3.consistency_ratio,
     },
+    {
+        "user": "user4",
+        "weights": sum([criteria for criteria in criteria4.target_weights.values()]),
+        "consistency": criteria4.consistency_ratio,
+    },
 ]
 
-maior_valor = max([user.get("weights") for user in users])
+maior_valor = max([user.get("consistency") for user in users])
 for user in users:
-    if user.get("weights") == maior_valor:
+    if user.get("consistency") == maior_valor:
         print(user)

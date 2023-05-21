@@ -9,10 +9,15 @@ routes_user_amigos = APIRouter()
 async def create_amizade(user_amigos: UserAmigos):
     users_amigos_model = UsersAmigosModel()
 
-    user_amigo_key = users_amigos_model.insert_user_amigos(user_id=user_amigos.user_id,
-                                                           amigos_user_id=user_amigos.amigo_user_id)
+    user_amigo_key = users_amigos_model.insert_user_amigos(
+        user_id=user_amigos.user_id, amigos_user_id=user_amigos.amigo_user_id
+    )
     return JSONResponse(
-        status_code=200, content={"message": "Amizade criada com sucesso!", "user_amigo_key": user_amigo_key}
+        status_code=200,
+        content={
+            "message": "Amizade criada com sucesso!",
+            "user_amigo_key": user_amigo_key,
+        },
     )
 
 
@@ -21,7 +26,7 @@ async def buscar_amizade(request: Request):
     request_body = await request.json()
     users_amigos_model = UsersAmigosModel()
 
-    amigos = users_amigos_model.get_amigos_by_user_id(user_id=request_body.get("user_id"))
-    return JSONResponse(
-        status_code=200, content=amigos
+    amigos = users_amigos_model.get_amigos_by_user_id(
+        user_id=request_body.get("user_id")
     )
+    return JSONResponse(status_code=200, content=amigos)

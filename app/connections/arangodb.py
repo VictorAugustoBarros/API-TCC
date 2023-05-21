@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from pyArango.connection import Connection, CreationError
 from app.utils.credentials import (
     arango_host,
@@ -8,14 +9,16 @@ from app.utils.credentials import (
 )
 
 
+@dataclass
+class InsertDocument:
+    id: str
+    key: str
+
+
 class ArangoDB:
     def __init__(self, collection: str, edge: bool = False):
         self.collection = collection
-        conn = Connection(
-            username=arango_user,
-            password=arango_password,
-            verify=False
-        )
+        conn = Connection(username=arango_user, password=arango_password, verify=False)
         self.db = conn[arango_database]
         self.create_collection(collection_name=collection, edge=edge)
         self.collection = self.db[collection]
@@ -43,24 +46,45 @@ class ArangoDB:
         documents = self.db.AQLQuery(query=aql, rawResults=True)
         return [document for document in documents]
 
+    def find_all(self):
+        aql = f"FOR doc IN {self.collection.name} RETURN doc"
+        documents = self.db.AQLQuery(query=aql, rawResults=True)
+        return [document for document in documents]
+
     def insert(self, **kwargs):
         doc1 = self.collection.createDocument()
         for key, value in kwargs.items():
             doc1[key] = value
         doc1.save()
-        return doc1._id
+        return InsertDocument(
+            id=doc1._id,
+            key=doc1._key,
+        )
+
+    def insert_edge(self, **kwargs):
+        doc1 = self.collection.createEdge()
+        for key, value in kwargs.items():
+            doc1[key] = value
+        doc1.save()
+        return InsertDocument(
+            id=doc1._id,
+            key=doc1._key,
+        )
 
     def update(self, key: str, data: dict):
         key_value = {"_key": key}
         aql = f"UPDATE {key_value} WITH {data} IN {self.collection.name}"
         self.db.AQLQuery(aql)
 
-    def delete(self, key: str):
+    def delete_by_key(self, key: str):
         key_value = {"_key": key}
+        aql = f"REMOVE {key_value} IN {self.collection.name}"
+        self.db.AQLQuery(aql)
+
+    def delete_by_id(self, id: str):
+        key_value = {"_id": id}
         aql = f"REMOVE {key_value} IN {self.collection.name}"
         self.db.AQLQuery(aql)
 
     def aql_query(self, aql: str):
         return self.db.AQLQuery(query=aql, rawResults=True)
-
-

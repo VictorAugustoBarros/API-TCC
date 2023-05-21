@@ -10,11 +10,11 @@ class ObjetivosUsuarioModel(ArangoDB):
         super().__init__(collection="ObjetivosUsuario", edge=True)
 
     def insert_objetivo_user(self, objetivo_id: str, user_id: str):
-        aresta = {
-            "_from": user_id,
-            "_to": objetivo_id
-        }
-        self.insert(**aresta)
+        aresta = {"_from": objetivo_id, "_to": user_id}
+        return self.insert(**aresta)
+
+    def delete_objetivo_user(self, objetivo_user_key: str):
+        self.delete_by_key(key=objetivo_user_key)
 
     def get_objetivo_user(self, user_id: str):
         aql_query = f"""

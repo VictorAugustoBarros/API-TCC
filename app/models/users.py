@@ -1,46 +1,40 @@
+from dataclasses import dataclass
 from pydantic import BaseModel
 from app.connections.arangodb import ArangoDB
 
 
-class LoginUser(BaseModel):
-    email: str
-    password: str
-
-
-class User(BaseModel):
+@dataclass
+class User:
     name: str
     email: str
     password: str
     username: str
     followers: int = 0
     following: int = 0
-    _key: str = None
 
 
 class UsersModel(ArangoDB):
     def __init__(self):
         super().__init__(collection="Users")
 
-    def insert_user(self, user: User):
+    def create_user(self, user: User):
         return self.insert(**user.__dict__)
 
-    def find_user_by_name(self, username: str):
-        return self.find(data={"name": username})
-
-    def find_user_by_email(self, email: str):
+    def find_user_email(self, email: str):
         return self.find(data={"email": email})
 
-    def find_user_by_username(self, username: str):
-        return self.find(data={"username": username})
+    def find_all_usernames(self):
+        users = self.find_all()
+        return [user.get("username") for user in users]
 
-    def find_user_by_key(self, user_key: str):
-        user = self.find(data={"_key": user_key})
+    def find_user_username(self, username: str):
+        user = self.find(data={"username": username})
         if user:
             return user[0]
         return user
 
-    def find_user_by_id(self, user_id: str):
-        user = self.find(data={"_id": user_id})
+    def find_user_by_key(self, user_key: str):
+        user = self.find(data={"_key": user_key})
         if user:
             return user[0]
         return user
@@ -49,11 +43,12 @@ class UsersModel(ArangoDB):
         self.update(key=key, data=user.__dict__)
 
     def delete_user(self, key: str):
-        self.delete(key=key)
+        self.delete_by_key(key=key)
 
-    def find_user_login(self, login_user: LoginUser):
-        user = self.find(data={"email": login_user.email, "password": login_user.password})
+    def find_user_login(self, email: str, password: str):
+        user = self.find(
+            data={"email": email, "password": password}
+        )
         if user:
             return user[0]
         return user
-

@@ -2,6 +2,8 @@ import json
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
+from services.jwt_manager import JwtManager
+
 routes_criterios = APIRouter()
 
 from app.models.criterios import Criterio, CriteriosModel
@@ -11,7 +13,9 @@ from app.models.criterios import Criterio, CriteriosModel
 async def insert(criterio: Criterio):
     criterio_model = CriteriosModel()
     criterio_model.insert_criterio(criterio=criterio)
-    return JSONResponse(status_code=200, content={"success": True, "criterio": criterio.__dict__})
+    return JSONResponse(
+        status_code=200, content={"success": True, "criterio": criterio.__dict__}
+    )
 
 
 @routes_criterios.delete("/criterios/{key}")

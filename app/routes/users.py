@@ -1,6 +1,7 @@
+from app.utils.utils import remove_critical_data
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
-from app.models.users import UsersModel, User, LoginUser
+from app.models.users import UsersModel, User
 from models.users_amigos import UsersAmigosModel
 from services.jwt_manager import JwtManager
 
@@ -29,18 +30,25 @@ async def create_user(user: User):
     has_user = users_model.find_user_by_email(email=user.email)
     if has_user:
         return JSONResponse(
-            status_code=200, content={"success": False, "message": "Email já cadastrado!"}
+            status_code=200,
+            content={"success": False, "message": "Email já cadastrado!"},
         )
 
     has_user = users_model.find_user_by_username(username=user.username)
     if has_user:
         return JSONResponse(
-            status_code=200, content={"success": False, "message": "Username já utilizado!"}
+            status_code=200,
+            content={"success": False, "message": "Username já utilizado!"},
         )
 
-    user_created = users_model.insert_user(user=user)
+    user_created = users_model.create_user(user=user)
     return JSONResponse(
-        status_code=200, content={"success": True, "message": "Usuário cadastrado com sucesso!", "user": user_created}
+        status_code=200,
+        content={
+            "success": True,
+            "message": "Usuário cadastrado com sucesso!",
+            "user": user_created,
+        },
     )
 
 
@@ -63,22 +71,33 @@ async def get_user(request: Request):
             status_code=200, content={"message": "Usuário não encontrado!"}
         )
 
-    del user["_id"]
-    del user["_rev"]
-    del user["password"]
     user["key"] = user.pop("_key")
+    user = remove_critical_data(data=user, remove_data=["_id", "_rev", "password"])
 
     users_amigos_model = UsersAmigosModel()
     amigos = users_amigos_model.get_amigos_by_user_id(user_id=user.get("_id"))
     for amigo in amigos:
-        del amigo["_id"]
-        del amigo["_rev"]
-        amigo["key"] = amigo.pop("_key")
+        amigo.update(remove_critical_data(data=user, remove_data=["_id", "_rev"]))
 
-    return JSONResponse(status_code=200, content={
-        "user": user,
-        "amigos": amigos
-    })
+    return JSONResponse(status_code=200, content={"user": user, "amigos": amigos})
+
+
+@routes_users.get("/users/username/{username}")
+async def get_user(username: str):
+    users_model = UsersModel()
+    user = users_model.find_user_by_username(username=username)
+    if not user:
+        return JSONResponse(
+            status_code=200, content={"message": "Usuário não encontrado!"}
+        )
+
+    user = remove_critical_data(data=user, remove_data=["_id", "_rev", "password"])
+    return JSONResponse(
+        status_code=200,
+        content={
+            "user": user,
+        },
+    )
 
 
 @routes_users.put("/users/{key}")
@@ -96,4 +115,21 @@ async def delete_user(key: str):
     users_model.delete_user(key=key)
     return JSONResponse(
         status_code=200, content={"message": "Usuário deletado com sucesso!"}
+    )
+
+
+@routes_users.get("/users/usernames")
+async def get_user():
+    users_model = UsersModel()
+    usernames = users_model.find_all_usernames()
+    if not usernames:
+        return JSONResponse(
+            status_code=200, content={"error": "Usuários não encontrado!"}
+        )
+
+    return JSONResponse(
+        status_code=200,
+        content={
+            "usernames": usernames,
+        },
     )
