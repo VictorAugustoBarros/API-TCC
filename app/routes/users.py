@@ -1,135 +1,118 @@
-from app.utils.utils import remove_critical_data
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
+
+from app.services.register import Register
 from app.models.users import UsersModel, User
-from models.users_amigos import UsersAmigosModel
-from services.jwt_manager import JwtManager
+from validatores.token_validator import token_validation
 
 routes_users = APIRouter()
 
 
 @routes_users.post("/users")
 async def create_user(user: User):
-    """Criação de um novo usuário
+    register_service = Register()
+    user_register = register_service.register_user(user=user)
 
-    Args:
-        user (User):
-            name: str
-            email: str
-            password: str
-            username: str
-
-    Returns:
-        200 -> {"message": "Email já cadastrado!"}
-        200 -> {"message": "Username já utilizado!"}
-        200 -> {"message": "Usuário cadastrado com sucesso!", "user": <user_id>}
-
-    """
-    users_model = UsersModel()
-
-    has_user = users_model.find_user_by_email(email=user.email)
-    if has_user:
+    if not user_register.get("success"):
         return JSONResponse(
             status_code=200,
-            content={"success": False, "message": "Email já cadastrado!"},
+            content=user_register,
         )
 
-    has_user = users_model.find_user_by_username(username=user.username)
-    if has_user:
-        return JSONResponse(
-            status_code=200,
-            content={"success": False, "message": "Username já utilizado!"},
-        )
-
-    user_created = users_model.create_user(user=user)
     return JSONResponse(
         status_code=200,
-        content={
-            "success": True,
-            "message": "Usuário cadastrado com sucesso!",
-            "user": user_created,
-        },
+        content=user_register,
     )
 
 
 @routes_users.get("/users")
+@token_validation
 async def get_user(request: Request):
-    if not (token := request.headers.get("token")):
-        return JSONResponse(
-            status_code=401, content={"message": "Favor informar o token!"}
-        )
-
-    jwt_manager = JwtManager()
-    user_data = jwt_manager.verify_token(token=token)
-    key = user_data.get("key")
+    user_data = request.state.token
 
     users_model = UsersModel()
-
-    user = users_model.find_user_by_key(user_key=key)
+    user = users_model.find_user_by_key(user_key=user_data.get("key"))
     if not user:
         return JSONResponse(
             status_code=200, content={"message": "Usuário não encontrado!"}
         )
 
-    user["key"] = user.pop("_key")
-    user = remove_critical_data(data=user, remove_data=["_id", "_rev", "password"])
-
-    users_amigos_model = UsersAmigosModel()
-    amigos = users_amigos_model.get_amigos_by_user_id(user_id=user.get("_id"))
-    for amigo in amigos:
-        amigo.update(remove_critical_data(data=user, remove_data=["_id", "_rev"]))
-
-    return JSONResponse(status_code=200, content={"user": user, "amigos": amigos})
-
-
-@routes_users.get("/users/username/{username}")
-async def get_user(username: str):
-    users_model = UsersModel()
-    user = users_model.find_user_by_username(username=username)
-    if not user:
-        return JSONResponse(
-            status_code=200, content={"message": "Usuário não encontrado!"}
-        )
-
-    user = remove_critical_data(data=user, remove_data=["_id", "_rev", "password"])
     return JSONResponse(
         status_code=200,
         content={
-            "user": user,
+            "name": user.get("name"),
+            "email": user.get("email"),
+            "password": user.get("password"),
+            "username": user.get("username"),
+            "followers": user.get("followers"),
+            "following": user.get("following"),
+            "user_icon": user.get("user_icon"),
+            "user_banner": user.get("user_banner")
         },
     )
 
 
-@routes_users.put("/users/{key}")
-async def put_user(key: str, user: User):
+@routes_users.put("/users")
+@token_validation
+async def update_user(request: Request):
+    user_data = request.state.token
+    request_body = await request.json()
+
     users_model = UsersModel()
-    users_model.update_user(key=key, user=user.__dict__)
+    users_model.update_user(key=user_data.get("key"), user=request_body)
     return JSONResponse(
         status_code=200, content={"message": "Usuário atualizado com sucesso!"}
     )
 
 
-@routes_users.delete("/users/{key}")
-async def delete_user(key: str):
+@routes_users.delete("/users")
+async def delete_user(request: Request):
+    user_data = request.state.token
+
     users_model = UsersModel()
-    users_model.delete_user(key=key)
+    users_model.delete_user(key=user_data.get("key"))
     return JSONResponse(
         status_code=200, content={"message": "Usuário deletado com sucesso!"}
     )
 
 
-@routes_users.get("/users/usernames")
-async def get_user():
+@routes_users.get("/usernames")
+@token_validation
+async def get_usernames(request: Request):
     users_model = UsersModel()
     usernames = users_model.find_all_usernames()
     if not usernames:
         return JSONResponse(
-            status_code=200, content={"error": "Usuários não encontrado!"}
+            status_code=200, content={"error": "Usernames não encontrados!"}
+        )
+
+    return JSONResponse(
+        status_code=200,
+        content=usernames
+    )
+
+
+@routes_users.get("/usernames/{username}")
+@token_validation
+async def get_usernames(request: Request):
+    username = request.path_params.get("username")
+    users_model = UsersModel()
+    user = users_model.find_user_username(username=username)
+    if not user:
+        return JSONResponse(
+            status_code=200, content={"error": "Usuário não encontrado!"}
         )
 
     return JSONResponse(
         status_code=200,
         content={
-            "usernames": usernames,
-        },
+            "name": user.get("name"),
+            "email": user.get("email"),
+            "password": user.get("password"),
+            "username": user.get("username"),
+            "followers": user.get("followers"),
+            "following": user.get("following"),
+            "user_icon": user.get("user_icon"),
+            "user_banner": user.get("user_banner"),
+        }
     )

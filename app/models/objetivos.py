@@ -1,11 +1,10 @@
 from dataclasses import dataclass
-from pydantic import BaseModel
 from app.connections.arangodb import ArangoDB
 
 from datetime import datetime
 
 
-class ObjetivoBase(BaseModel):
+class ObjetivoBase:
     titulo: str
     categoria: str
     descricao: str

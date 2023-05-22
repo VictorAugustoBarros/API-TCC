@@ -1,3 +1,4 @@
+# @TODO -> Refatorar
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from ahp.user_criterios import UserCriteriosModel, UserCriterio
@@ -8,7 +9,7 @@ routes_user_criterios = APIRouter()
 
 @routes_user_criterios.get("/criterios")
 async def get_criterios(request: Request):
-    if not (token := request.headers.get("token")):
+    if not (token := request.headers.get("Authorization")):
         return JSONResponse(
             status_code=401, content={"message": "Favor informar o token!"}
         )
@@ -28,7 +29,7 @@ async def get_criterios(request: Request):
 
 @routes_user_criterios.post("/criterios/user")
 async def config_criterios(request: Request):
-    if not (token := request.headers.get("token")):
+    if not (token := request.headers.get("Authorization")):
         return JSONResponse(
             status_code=401, content={"message": "Favor informar o token!"}
         )
@@ -42,7 +43,7 @@ async def config_criterios(request: Request):
     user_criterio_model = UserCriteriosModel()
 
     if user_criterio_id := user_criterio_model.find_criterio_by_user(
-        user_id=user.get("id")
+            user_id=user.get("id")
     ):
         user_criterio_model.delete_criterio(key=user_criterio_id.get("_key"))
 

@@ -1,4 +1,3 @@
-from pydantic import BaseModel
 from app.connections.arangodb import ArangoDB
 
 from app.models.objetivos import Objetivo
@@ -18,11 +17,11 @@ class ObjetivosUsuarioModel(ArangoDB):
 
     def get_objetivo_user(self, user_id: str):
         aql_query = f"""
-            FOR doc IN {self.collection_name}
-            FILTER doc._from == '{user_id}'
-            FOR objetivo IN Objetivos
-                FILTER objetivo._id == doc._to
-                RETURN objetivo
+            FOR objetivosUsuarios IN {self.collection_name}
+                FILTER objetivosUsuarios._to == '{user_id}'
+                    FOR objetivo IN Objetivos
+                        FILTER objetivo._id == objetivosUsuarios._from
+                        RETURN objetivo
         """
         documents = self.aql_query(aql=aql_query)
         return [document for document in documents]

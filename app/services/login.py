@@ -10,10 +10,7 @@ class Login:
     def login_user(self, email: str, password: str):
         user = self.users_model.find_user_login(email=email, password=password)
         if not user:
-            return {
-                "success": False,
-                "error": "Usuário não encontrado!"
-            }
+            return {"success": False, "error": "Usuário não encontrado!"}
 
         token = self.jwt_manager.create_token(
             payload={
@@ -24,7 +21,4 @@ class Login:
             }
         )
 
-        return {
-            "success": True,
-            "token": token
-        }
+        return {"success": True, "token": token}

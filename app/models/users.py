@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from pydantic import BaseModel
 from app.connections.arangodb import ArangoDB
 
 
@@ -11,6 +10,8 @@ class User:
     username: str
     followers: int = 0
     following: int = 0
+    user_icon: str = "https://cdn.icon-icons.com/icons2/2468/PNG/512/user_icon_149329.png"
+    user_banner: str = "https://br.virbac.com/files/live/sites/virbac-br/files/predefined-files/banners/Cats/Banner_Gato.jpg"
 
 
 class UsersModel(ArangoDB):
@@ -40,15 +41,13 @@ class UsersModel(ArangoDB):
         return user
 
     def update_user(self, key: str, user: dict):
-        self.update(key=key, data=user.__dict__)
+        self.update(key=key, data=user)
 
     def delete_user(self, key: str):
         self.delete_by_key(key=key)
 
     def find_user_login(self, email: str, password: str):
-        user = self.find(
-            data={"email": email, "password": password}
-        )
+        user = self.find(data={"email": email, "password": password})
         if user:
             return user[0]
         return user

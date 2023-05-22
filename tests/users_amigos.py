@@ -15,7 +15,7 @@ class UsersTest(TestCase):
         user1 = self.create_tests.create_user()
         user2 = self.create_tests.create_user()
 
-        user_amigo = self.users_amigos_model.insert_user_amigos(user_id=user1.id, amigos_id=user2.id)
+        user_amigo = self.users_amigos_model.insert_user_amigos(user_id=user1.id, amigo_id=user2.id)
 
         # Verificando criação User
         user_amigos = self.users_amigos_model.find_amigos_by_user_id(user_id=user1.id)

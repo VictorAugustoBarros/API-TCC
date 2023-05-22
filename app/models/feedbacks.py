@@ -25,7 +25,7 @@ class Feedbacks:
     objetivo_key: str
     questoes: Questoes
     observacoes: str
-    data_feedback: str = datetime.strftime(datetime.now(), "%m/%d/%Y %H:%M:%S"),
+    data_feedback: str = (datetime.strftime(datetime.now(), "%m/%d/%Y %H:%M:%S"),)
 
 
 class FeedbacksModel(ArangoDB):
