@@ -21,6 +21,7 @@ class Objetivo:
     imagem: str
     data_fim: str
     data_inicio: str = datetime.now()
+    key: str = None
 
 
 class ObjetivosModel(ArangoDB):
@@ -35,6 +36,9 @@ class ObjetivosModel(ArangoDB):
 
     def insert_objetivo(self, objetivo: Objetivo):
         return self.insert(**objetivo.__dict__)
+
+    def update_objetivo(self, objetivo_key, objetivo: Objetivo):
+        return self.update(objetivo_key, objetivo.__dict__)
 
     def delete_objetivo(self, objetivo_key: str):
         self.delete_by_key(key=objetivo_key)

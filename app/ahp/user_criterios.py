@@ -22,7 +22,7 @@ class UserCriteriosModel(ArangoDB):
         return criterios
 
     def delete_criterio(self, key: str):
-        self.delete(key=key)
+        self.delete_by_key(key=key)
 
 
 # from enum import Enum

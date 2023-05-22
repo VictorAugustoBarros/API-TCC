@@ -31,7 +31,7 @@ async def create_amizade(request: Request):
         )
 
     user_amigo_key = users_amigos_model.insert_user_amigos(
-        user_id=user_data.get("id"), amigo_id=amigo.get("id")
+        user_id=user_data.get("id"), amigo_id=amigo.get("_id")
     )
 
     return JSONResponse(

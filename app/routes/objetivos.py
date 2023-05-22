@@ -29,6 +29,17 @@ async def create_objetivo(request: Request):
     return JSONResponse(status_code=200, content={"success": True})
 
 
+@routes_objetivos.put("/objetivos")
+@token_validation
+async def update_objetivo(request: Request):
+    body = await request.json()
+
+    objetivos_model = ObjetivosModel()
+    objetivo = Objetivo(**body)
+    objetivo_id = objetivos_model.update_objetivo(objetivo_key=objetivo.key, objetivo=objetivo)
+    return JSONResponse(status_code=200, content={"success": True})
+
+
 @routes_objetivos.get("/objetivos")
 @token_validation
 async def get_objetivos_user(request: Request):
