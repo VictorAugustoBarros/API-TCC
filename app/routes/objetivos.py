@@ -50,4 +50,4 @@ async def get_objetivos_user(request: Request):
     for objetivo in objetivos:
         objetivo.update(remove_critical_data(data=objetivo, remove_data=["_rev", "_id"]))
 
-    return JSONResponse(status_code=200, content={"objetivos": objetivos})
+    return JSONResponse(status_code=200, content=objetivos if objetivos else [])
