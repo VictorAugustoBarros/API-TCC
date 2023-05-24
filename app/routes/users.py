@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 
 from app.services.register import Register
 from app.models.users import UsersModel, User
+from models.user_criterios import UserCriteriosModel
 from validatores.token_validator import token_validation
 
 routes_users = APIRouter()
@@ -37,17 +38,23 @@ async def get_user(request: Request):
             status_code=200, content={"message": "Usuário não encontrado!"}
         )
 
+    user_criterio_model = UserCriteriosModel()
+    user_criterios = user_criterio_model.find_criterio_by_user(user_id=user.get("_id"))
+
     return JSONResponse(
         status_code=200,
         content={
-            "name": user.get("name"),
-            "email": user.get("email"),
-            "password": user.get("password"),
-            "username": user.get("username"),
-            "followers": user.get("followers"),
-            "following": user.get("following"),
-            "user_icon": user.get("user_icon"),
-            "user_banner": user.get("user_banner")
+            "user": {
+                "name": user.get("name"),
+                "email": user.get("email"),
+                "password": user.get("password"),
+                "username": user.get("username"),
+                "followers": user.get("followers"),
+                "following": user.get("following"),
+                "userIcon": user.get("user_icon"),
+                "userBanner": user.get("user_banner"),
+            },
+            "hasCriterios": True if len(user_criterios) > 0 else False,
         },
     )
 
@@ -86,10 +93,7 @@ async def get_usernames(request: Request):
             status_code=200, content={"error": "Usernames não encontrados!"}
         )
 
-    return JSONResponse(
-        status_code=200,
-        content=usernames
-    )
+    return JSONResponse(status_code=200, content=usernames)
 
 
 @routes_users.get("/usernames/{username}")
@@ -112,7 +116,7 @@ async def get_usernames(request: Request):
             "username": user.get("username"),
             "followers": user.get("followers"),
             "following": user.get("following"),
-            "user_icon": user.get("user_icon"),
-            "user_banner": user.get("user_banner"),
-        }
+            "userIcon": user.get("user_icon"),
+            "userBanner": user.get("user_banner"),
+        },
     )

@@ -4,15 +4,6 @@ from app.connections.arangodb import ArangoDB
 from datetime import datetime
 
 
-class ObjetivoBase:
-    titulo: str
-    categoria: str
-    descricao: str
-    imagem: str
-    data_fim: str
-    data_inicio: str = datetime.now()
-
-
 @dataclass
 class Objetivo:
     titulo: str
@@ -20,7 +11,7 @@ class Objetivo:
     descricao: str
     imagem: str
     data_fim: str
-    data_inicio: str = datetime.now()
+    data_inicio: str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     key: str = None
 
 

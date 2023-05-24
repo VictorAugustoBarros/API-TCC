@@ -1,4 +1,5 @@
 from app.models.users import UsersModel
+from models.user_criterios import UserCriteriosModel
 from services.jwt_manager import JwtManager
 
 

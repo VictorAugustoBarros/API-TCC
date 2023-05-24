@@ -16,25 +16,25 @@ class InsertDocument:
 
 
 class ArangoDB:
-    default_arango_collections = {
-        "Objetivos": {"edge": False}
-    }
+    default_arango_collections = {"Objetivos": {"edge": False}}
 
     def __init__(self, collection: str, edge: bool = False):
         self.collection = collection
-        print({
-            "arango_host": arango_host,
-            "arango_port": arango_port,
-            "arango_user": arango_user,
-            "arango_password": arango_password,
-            "arango_database": arango_database,
-        })
-        conn = Connection(arangoURL=f"{arango_host}:{arango_port}", username=arango_user, password=arango_password,
-                          verify=False)
+        conn = Connection(
+            arangoURL=f"{arango_host}:{arango_port}",
+            username=arango_user,
+            password=arango_password,
+            verify=False,
+        )
         self.db = conn[arango_database]
 
-        for collection_name, collection_values in self.default_arango_collections.items():
-            self.create_collection(collection_name=collection_name, edge=collection_values.get("edge"))
+        for (
+            collection_name,
+            collection_values,
+        ) in self.default_arango_collections.items():
+            self.create_collection(
+                collection_name=collection_name, edge=collection_values.get("edge")
+            )
 
         self.create_collection(collection_name=collection, edge=edge)
         self.collection = self.db[collection]

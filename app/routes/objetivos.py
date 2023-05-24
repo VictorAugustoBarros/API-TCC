@@ -1,3 +1,4 @@
+from datetime import datetime
 from app.utils.utils import remove_critical_data
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
@@ -32,12 +33,28 @@ async def create_objetivo(request: Request):
 @routes_objetivos.put("/objetivos")
 @token_validation
 async def update_objetivo(request: Request):
-    body = await request.json()
+    try:
+        body = await request.json()
 
-    objetivos_model = ObjetivosModel()
-    objetivo = Objetivo(**body)
-    objetivo_id = objetivos_model.update_objetivo(objetivo_key=objetivo.key, objetivo=objetivo)
-    return JSONResponse(status_code=200, content={"success": True})
+        objetivos_model = ObjetivosModel()
+
+        objetivo = Objetivo(
+            titulo=body.get("titulo"),
+            categoria=body.get("categoria"),
+            descricao=body.get("descricao"),
+            imagem=body.get("imagem"),
+            data_fim=body.get("dataFim"),
+            key=body.get("key"),
+        )
+        objetivos_model.update_objetivo(objetivo_key=objetivo.key, objetivo=objetivo)
+        return JSONResponse(status_code=200, content={"success": True})
+
+    except Exception as error:
+        print(error)
+        return JSONResponse(
+            status_code=400,
+            content={"message": "Falha ao atualizar Objetivo!"},
+        )
 
 
 @routes_objetivos.get("/objetivos")
@@ -48,6 +65,28 @@ async def get_objetivos_user(request: Request):
     objetivos = objetivos_user_model.get_objetivo_user(user_id=user_data.get("id"))
 
     for objetivo in objetivos:
-        objetivo.update(remove_critical_data(data=objetivo, remove_data=["_rev", "_id"]))
+        objetivo.update(
+            remove_critical_data(data=objetivo, remove_data=["_rev", "_id"])
+        )
 
     return JSONResponse(status_code=200, content=objetivos if objetivos else [])
+
+
+@routes_objetivos.get("/objetivos/{objetivo_key}")
+@token_validation
+async def get_objetivos_user(request: Request):
+    objetivo_key = request.path_params.get("objetivo_key")
+
+    objetivos_model = ObjetivosModel()
+    objetivo = objetivos_model.find_objetivo(objetivo_key=objetivo_key)
+
+    return JSONResponse(
+        status_code=200,
+        content={
+            "titulo": objetivo.get("titulo"),
+            "categoria": objetivo.get("categoria"),
+            "dataFim": objetivo.get("data_fim"),
+            "imagem": objetivo.get("imagem"),
+            "descricao": objetivo.get("descricao"),
+        },
+    )

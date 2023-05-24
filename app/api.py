@@ -10,9 +10,13 @@ from app.routes.user_criterios import routes_user_criterios
 from app.routes.user_amigos import routes_user_amigos
 from app.routes.objetivos import routes_objetivos
 from app.routes.auth import routes_auth
+from app.routes.info import routes_info
 
 app = FastAPI()
-origins = ["http://localhost:3001", "http://ec2-18-230-69-64.sa-east-1.compute.amazonaws.com:3001"]
+origins = [
+    "http://localhost:3001",
+    "http://ec2-18-230-69-64.sa-east-1.compute.amazonaws.com:3001",
+]
 
 app.add_middleware(
     CORSMiddleware,
@@ -31,6 +35,7 @@ def create_app():
     app.include_router(routes_criterios)
     app.include_router(routes_objetivos)
     app.include_router(routes_user_criterios)
+    app.include_router(routes_info)
 
     @app.get("/healthcheck")
     def health_check():

@@ -10,7 +10,9 @@ class User:
     username: str
     followers: int = 0
     following: int = 0
-    user_icon: str = "https://cdn.icon-icons.com/icons2/2468/PNG/512/user_icon_149329.png"
+    user_icon: str = (
+        "https://cdn.icon-icons.com/icons2/2468/PNG/512/user_icon_149329.png"
+    )
     user_banner: str = "https://br.virbac.com/files/live/sites/virbac-br/files/predefined-files/banners/Cats/Banner_Gato.jpg"
 
 

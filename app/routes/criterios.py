@@ -11,7 +11,8 @@ async def insert(criterio: Criterio):
     criterio_model = CriteriosModel()
     criterio_database = criterio_model.create_criterio(criterio=criterio)
     return JSONResponse(
-        status_code=200, content={"success": True, "criterio_key": criterio_database.key}
+        status_code=200,
+        content={"success": True, "criterio_key": criterio_database.key},
     )
 
 
