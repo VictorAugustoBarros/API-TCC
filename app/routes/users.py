@@ -9,7 +9,7 @@ from validatores.token_validator import token_validation
 routes_users = APIRouter()
 
 
-@routes_users.post("/users")
+@routes_users.post("/api/users")
 async def create_user(user: User):
     register_service = Register()
     user_register = register_service.register_user(user=user)
@@ -26,7 +26,7 @@ async def create_user(user: User):
     )
 
 
-@routes_users.get("/users")
+@routes_users.get("/api/users")
 @token_validation
 async def get_user(request: Request):
     user_data = request.state.token
@@ -59,7 +59,7 @@ async def get_user(request: Request):
     )
 
 
-@routes_users.put("/users")
+@routes_users.put("/api/users")
 @token_validation
 async def update_user(request: Request):
     user_data = request.state.token
@@ -72,7 +72,7 @@ async def update_user(request: Request):
     )
 
 
-@routes_users.delete("/users")
+@routes_users.delete("/api/users")
 async def delete_user(request: Request):
     user_data = request.state.token
 
@@ -83,7 +83,7 @@ async def delete_user(request: Request):
     )
 
 
-@routes_users.get("/usernames")
+@routes_users.get("/api/usernames")
 @token_validation
 async def get_usernames(request: Request):
     users_model = UsersModel()
@@ -96,7 +96,7 @@ async def get_usernames(request: Request):
     return JSONResponse(status_code=200, content=usernames)
 
 
-@routes_users.get("/usernames/{username}")
+@routes_users.get("/api/usernames/{username}")
 @token_validation
 async def get_usernames(request: Request):
     username = request.path_params.get("username")

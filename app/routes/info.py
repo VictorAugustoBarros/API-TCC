@@ -10,7 +10,7 @@ from app.models.users import UsersModel
 routes_info = APIRouter()
 
 
-@routes_info.get("/info/user_card")
+@routes_info.get("/api/info/user_card")
 @token_validation
 async def get_user_card(request: Request):
     try:
@@ -44,7 +44,7 @@ async def get_user_card(request: Request):
         )
 
 
-@routes_info.get("/info/lista_amigos")
+@routes_info.get("/api/info/lista_amigos")
 @token_validation
 async def get_lista_amigos(request: Request):
     try:
@@ -74,7 +74,7 @@ async def get_lista_amigos(request: Request):
         )
 
 
-@routes_info.get("/info/user_perfil/{username}")
+@routes_info.get("/api/info/user_perfil/{username}")
 @token_validation
 async def get_user(request: Request):
     try:

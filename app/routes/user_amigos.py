@@ -8,7 +8,7 @@ from app.validatores.token_validator import token_validation
 routes_user_amigos = APIRouter()
 
 
-@routes_user_amigos.post("/amigos")
+@routes_user_amigos.post("/api/amigos")
 @token_validation
 async def create_amizade(request: Request):
     request_body = await request.json()
@@ -43,7 +43,7 @@ async def create_amizade(request: Request):
     )
 
 
-@routes_user_amigos.get("/amigos")
+@routes_user_amigos.get("/api/amigos")
 @token_validation
 async def buscar_amizade(request: Request):
     user_data = request.state.token

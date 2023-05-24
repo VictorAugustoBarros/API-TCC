@@ -15,8 +15,9 @@ from app.routes.info import routes_info
 app = FastAPI()
 origins = [
     "http://localhost:3001",
-    "http://ec2-18-230-69-64.sa-east-1.compute.amazonaws.com:3001",
+    "http://54.232.148.69/",
 ]
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -37,7 +38,7 @@ def create_app():
     app.include_router(routes_user_criterios)
     app.include_router(routes_info)
 
-    @app.get("/healthcheck")
+    @app.get("/api/healthcheck")
     def health_check():
         """Função para checar a saúde da api."""
         return JSONResponse(status_code=200, content={"status": "active"})

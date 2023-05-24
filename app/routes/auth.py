@@ -9,7 +9,7 @@ routes_auth = APIRouter()
 from app.services.login import Login
 
 
-@routes_auth.post("/auth/login")
+@routes_auth.post("/api/auth/login")
 async def auth_user(request: Request):
     request_body = await request.json()
     if not (email := request_body.get("email")):
@@ -30,7 +30,7 @@ async def auth_user(request: Request):
     return JSONResponse(status_code=200, content=login_user)
 
 
-@routes_auth.get("/auth/verify")
+@routes_auth.get("/api/auth/verify")
 @token_validation
 async def check_token(request: Request):
     return JSONResponse(status_code=200, content={"success": True})

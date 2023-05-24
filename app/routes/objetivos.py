@@ -11,7 +11,7 @@ routes_objetivos = APIRouter()
 from app.validatores.token_validator import token_validation
 
 
-@routes_objetivos.post("/objetivos")
+@routes_objetivos.post("/api/objetivos")
 @token_validation
 async def create_objetivo(request: Request):
     body = await request.json()
@@ -30,7 +30,7 @@ async def create_objetivo(request: Request):
     return JSONResponse(status_code=200, content={"success": True})
 
 
-@routes_objetivos.put("/objetivos")
+@routes_objetivos.put("/api/objetivos")
 @token_validation
 async def update_objetivo(request: Request):
     try:
@@ -57,7 +57,7 @@ async def update_objetivo(request: Request):
         )
 
 
-@routes_objetivos.get("/objetivos")
+@routes_objetivos.get("/api/objetivos")
 @token_validation
 async def get_objetivos_user(request: Request):
     user_data = request.state.token
@@ -72,7 +72,7 @@ async def get_objetivos_user(request: Request):
     return JSONResponse(status_code=200, content=objetivos if objetivos else [])
 
 
-@routes_objetivos.get("/objetivos/{objetivo_key}")
+@routes_objetivos.get("/api/objetivos/{objetivo_key}")
 @token_validation
 async def get_objetivos_user(request: Request):
     objetivo_key = request.path_params.get("objetivo_key")

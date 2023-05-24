@@ -8,7 +8,7 @@ from app.validatores.token_validator import token_validation
 routes_user_criterios = APIRouter()
 
 
-@routes_user_criterios.get("/user_criterios")
+@routes_user_criterios.get("/api/user_criterios")
 @token_validation
 async def get_criterios(request: Request):
     user_data = request.state.token
@@ -24,7 +24,7 @@ async def get_criterios(request: Request):
     )
 
 
-@routes_user_criterios.post("/user_criterios")
+@routes_user_criterios.post("/api/user_criterios")
 @token_validation
 async def config_criterios(request: Request):
     criterios = await request.json()

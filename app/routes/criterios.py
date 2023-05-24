@@ -6,7 +6,7 @@ from app.models.criterios import Criterio, CriteriosModel
 routes_criterios = APIRouter()
 
 
-@routes_criterios.post("/criterios")
+@routes_criterios.post("/api/criterios")
 async def insert(criterio: Criterio):
     criterio_model = CriteriosModel()
     criterio_database = criterio_model.create_criterio(criterio=criterio)
@@ -16,7 +16,7 @@ async def insert(criterio: Criterio):
     )
 
 
-@routes_criterios.delete("/criterios/{key}")
+@routes_criterios.delete("/api/criterios/{key}")
 async def delete(key: str):
     criterio_model = CriteriosModel()
     criterio_model.delete_criterio(criteiro_key=key)
