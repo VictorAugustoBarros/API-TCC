@@ -18,9 +18,9 @@ services:
   api-tcc:
     container_name: api-tcc
     build: .
-    command: [ "uvicorn", "app.api:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "1" ]
+    command: [ "uvicorn", "app.api:app", "--host", "0.0.0.0", "--port", "8081", "--workers", "1" ]
     ports:
-      - "8080:8080"
+      - "8081:8081"
     environment:
       LOG_LEVEL: INFO
       ARANGODB_HOST: http://arangodb
