@@ -34,7 +34,7 @@ services:
       - tcc-network
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.api.rule=(Host(`54.232.148.69`) && PathPrefix(`/api`))'
+      - 'traefik.http.routers.api.rule=(Host(`interlinker.com.br`) && PathPrefix(`/api`))'
 
 volumes:
   arangodb_data_container:

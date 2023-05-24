@@ -15,7 +15,7 @@ from app.routes.info import routes_info
 app = FastAPI()
 origins = [
     "http://localhost:3001",
-    "http://54.232.148.69/",
+    "http://interlinker.com.br"
 ]
 
 
