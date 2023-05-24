@@ -82,6 +82,10 @@ async def get_user(request: Request):
 
         users_model = UsersModel()
         user = users_model.find_user_username(username=username)
+        if not user:
+            return JSONResponse(
+                status_code=200, content={"error": "Usuário não encontrado!"}
+            )
 
         return JSONResponse(
             status_code=200,
