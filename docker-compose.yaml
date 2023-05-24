@@ -32,6 +32,9 @@ services:
       - arangodb
     networks:
       - tcc-network
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.app.rule=(Host(`54.232.148.69`) && PathPrefix(`/api`))'
 
 volumes:
   arangodb_data_container:
