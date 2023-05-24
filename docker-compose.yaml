@@ -15,7 +15,7 @@ services:
     networks:
       - tcc-network
 
-  api-tcc:
+  api:
     container_name: api-tcc
     build: .
     command: [ "uvicorn", "app.api:app", "--host", "0.0.0.0", "--port", "8081", "--workers", "1" ]
@@ -34,7 +34,7 @@ services:
       - tcc-network
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.app.rule=(Host(`54.232.148.69`) && PathPrefix(`/api`))'
+      - 'traefik.http.routers.api.rule=(Host(`54.232.148.69`) && PathPrefix(`/api`))'
 
 volumes:
   arangodb_data_container:
