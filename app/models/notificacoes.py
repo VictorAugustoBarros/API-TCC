@@ -20,14 +20,19 @@ class NotificacoesModel(ArangoDB):
 
     def find_notificacao(self, user_key: str):
         aql_query = f"""
-            FOR doc IN {self.collection_name}
-            FILTER doc.user_key_destinatario == '{user_key}'
-            FOR user IN Users
-                FILTER user._key == doc.user_key_destinatario
-                RETURN doc
+            FOR notificaco IN {self.collection_name}
+            FILTER notificaco.user_key_destinatario == '{user_key}'
+            RETURN notificaco
         """
-        documents = self.aql_query(aql=aql_query)
-        return [document for document in documents]
+        notificacoes_ok = []
+        notificacoes = self.aql_query(aql=aql_query)
+        for notificacao in notificacoes:
+            notificacoes_ok.append({
+                "key": notificacao.get("_key"),
+                "amizade": notificacao.get("amizade"),
+            })
+
+        return notificacoes_ok
 
     def delete_notificacao(self, notificacao_key: str):
         self.delete_by_key(key=notificacao_key)

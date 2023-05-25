@@ -1,10 +1,8 @@
-from datetime import datetime
 from app.utils.utils import remove_critical_data
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 from app.models.objetivos import ObjetivosModel, Objetivo
 from app.models.objetivos_users import ObjetivosUsuarioModel
-from services.jwt_manager import JwtManager
 
 routes_objetivos = APIRouter()
 
@@ -90,3 +88,24 @@ async def get_objetivos_user(request: Request):
             "descricao": objetivo.get("descricao"),
         },
     )
+
+
+@routes_objetivos.delete("/api/objetivos/{objetivo_key}")
+@token_validation
+async def remove_objetivos_user(request: Request):
+    try:
+        objetivo_key = request.path_params.get("objetivo_key")
+
+        objetivos_model = ObjetivosModel()
+        objetivos_model.delete_objetivo(objetivo_key=objetivo_key)
+
+        return JSONResponse(
+            status_code=200,
+            content={"success": True},
+        )
+
+    except Exception:
+        return JSONResponse(
+            status_code=400,
+            content={"error": "Falha ao remover objetivo"},
+        )

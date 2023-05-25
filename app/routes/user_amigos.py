@@ -12,7 +12,7 @@ routes_user_amigos = APIRouter()
 @token_validation
 async def create_amizade(request: Request):
     request_body = await request.json()
-    if not (amigo_username := request_body.get("amigo_username")):
+    if not (amigo_username := request_body.get("username")):
         return JSONResponse(
             status_code=200, content={"error": APIErrors.USER_ID_NOT_FOUND.value}
         )
