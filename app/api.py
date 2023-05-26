@@ -16,7 +16,8 @@ from app.routes.notiticacoes import routes_notificacoes
 app = FastAPI()
 origins = [
     "http://localhost:3001",
-    "http://interlinker.com.br"
+    "http://interlinker.com.br",
+    "http://54.232.148.69/",
 ]
 
 
