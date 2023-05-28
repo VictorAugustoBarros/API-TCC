@@ -34,6 +34,10 @@ async def create_amizade(request: Request):
         user_id=user_data.get("id"), amigo_id=amigo.get("_id")
     )
 
+    users_amigos_model.insert_user_amigos(
+        user_id=amigo.get("_id"), amigo_id=user_data.get("id")
+    )
+
     return JSONResponse(
         status_code=200,
         content={

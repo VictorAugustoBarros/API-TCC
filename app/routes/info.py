@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
+from models.notificacoes import NotificacoesModel
 from models.objetivos_users import ObjetivosUsuarioModel
 from models.users_amigos import UsersAmigosModel
 from validatores.token_validator import token_validation
@@ -78,6 +79,8 @@ async def get_lista_amigos(request: Request):
 @token_validation
 async def get_user(request: Request):
     try:
+        user_token = request.state.token
+
         username = request.path_params.get("username")
 
         users_model = UsersModel()
@@ -87,12 +90,20 @@ async def get_user(request: Request):
                 status_code=200, content={"error": "Usuário não encontrado!"}
             )
 
+        notificacao_model = NotificacoesModel()
+        friend_request = notificacao_model.has_send_notificao(user_key=user.get("_key"))
+
+        user_amigo_model = UsersAmigosModel()
+        is_friend = user_amigo_model.is_friend(user_id=user_token.get("id"), user_id_find=user.get("_id"))
+
         return JSONResponse(
             status_code=200,
             content={
                 "username": user.get("username"),
                 "userIcon": user.get("user_icon"),
                 "userBanner": user.get("user_banner"),
+                "friendRequest": friend_request,
+                "isFriend": is_friend,
             },
         )
 

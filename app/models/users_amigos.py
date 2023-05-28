@@ -26,6 +26,17 @@ class UsersAmigosModel(ArangoDB):
 
         return False
 
+    def is_friend(self, user_id: str, user_id_find: str):
+        aql_query = f"""
+                    FOR user_amigo IN {self.collection_name}
+                    FILTER user_amigo._from == '{user_id}' && user_amigo._to == '{user_id_find}' 
+                    RETURN user_amigo
+                """
+        documents = self.aql_query(aql=aql_query)
+        if documents:
+            return True
+        return False
+
     def find_amigos_by_user_id(self, user_id: str):
         aql_query = f"""
             FOR doc IN {self.collection_name}
