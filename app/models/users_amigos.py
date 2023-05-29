@@ -1,3 +1,4 @@
+from datetime import datetime
 from app.connections.arangodb import ArangoDB
 from app.utils.utils import remove_critical_data
 
@@ -8,7 +9,7 @@ class UsersAmigosModel(ArangoDB):
         super().__init__(collection=self.collection_name, edge=True)
 
     def insert_user_amigos(self, user_id: str, amigo_id: str):
-        aresta = {"_from": user_id, "_to": amigo_id}
+        aresta = {"_from": user_id, "_to": amigo_id, "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
         return self.insert(**aresta)
 
     def delete_user_amigos(self, user_amigo_key: str):
@@ -43,15 +44,18 @@ class UsersAmigosModel(ArangoDB):
             FILTER doc._from == '{user_id}'
             FOR user IN Users
                 FILTER user._id == doc._to
-                RETURN user
+                RETURN {{user, data: doc.data}}
         """
         documents = self.aql_query(aql=aql_query)
         for document in documents:
-            document.update(
-                remove_critical_data(
-                    data=document,
-                    remove_data=["_id", "_rev", "__pydantic_initialised__"],
-                )
+            document.get("user")['data'] = document.get("data")
+
+            document_ok = remove_critical_data(
+                data=document.get("user"),
+                remove_data=["_id", "_rev", "__pydantic_initialised__"],
             )
+
+            document.clear()
+            document.update(document_ok)
 
         return [document for document in documents]
