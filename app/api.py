@@ -13,6 +13,7 @@ from app.routes.auth import routes_auth
 from app.routes.info import routes_info
 from app.routes.notiticacoes import routes_notificacoes
 from app.routes.evolucao import routes_evolucao
+from app.routes.feedbacks import routes_feedback
 
 app = FastAPI()
 origins = [
@@ -41,6 +42,7 @@ def create_app():
     app.include_router(routes_info)
     app.include_router(routes_notificacoes)
     app.include_router(routes_evolucao)
+    app.include_router(routes_feedback)
 
     @app.get("/api/healthcheck")
     def health_check():

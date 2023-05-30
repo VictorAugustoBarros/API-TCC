@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def remove_critical_data(data: dict, remove_data: list = None):
@@ -57,3 +57,22 @@ def contar_registros_por_mes(datas):
     return meses_do_ano
 
 
+def datas_anteriores(data):
+    data_atual = datetime.now()
+    data_parametro = datetime.strptime(data, "%Y-%m-%d %H:%M:%S")
+
+    datas_anteriores = []
+    dia = data_atual.date()
+
+    while dia > data_parametro.date():
+        datas_anteriores.append(dia.strftime("%Y-%m-%d"))
+        dia -= timedelta(days=1)
+
+    return datas_anteriores
+
+
+def ordenar_datas(lista_datas):
+    datas_convertidas = [datetime.strptime(data, "%Y-%m-%d").date() for data in lista_datas]
+    datas_ordenadas = sorted(datas_convertidas)
+    datas_formatadas = [data.strftime("%d/%m/%Y") for data in datas_ordenadas]
+    return datas_formatadas

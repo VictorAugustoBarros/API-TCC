@@ -24,8 +24,9 @@ class Feedbacks:
     user_key: str
     objetivo_key: str
     questoes: Questoes
-    observacoes: str
-    data_feedback: str = (datetime.strftime(datetime.now(), "%m/%d/%Y %H:%M:%S"),)
+    observacao: str
+    data_feedback: str
+    data_insert: str = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S")
 
 
 class FeedbacksModel(ArangoDB):
@@ -36,10 +37,19 @@ class FeedbacksModel(ArangoDB):
     def create_feedback(self, feedback: Feedbacks):
         return self.insert(**feedback.__dict__)
 
-    def find_feedback(self, user_key: str, objetivo_key: str):
+    def find_user_feedbacks(self, user_key: str):
         aql_query = f"""
             FOR feedback IN {self.collection_name}
-                FILTER feedback.user_key == '{user_key}' AND feedback.objetivo_key == '{objetivo_key}'
+                FILTER feedback.user_key == '{user_key}' 
+                RETURN feedback
+        """
+        documents = self.aql_query(aql=aql_query)
+        return [document for document in documents]
+
+    def find_feedback(self, objetivo_key: str):
+        aql_query = f"""
+            FOR feedback IN {self.collection_name}
+                FILTER feedback.objetivo_key == '{objetivo_key}'
                 RETURN feedback
         """
         documents = self.aql_query(aql=aql_query)
