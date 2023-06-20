@@ -35,7 +35,7 @@ async def insert(request: Request):
             questao_dificuldade=int(questao2),
             questao_satisfacao=int(questao3),
             questao_atingimento=int(questao4),
-            questao_eficacia=int(questao5)
+            questao_eficacia=int(questao5),
         ),
     )
 
@@ -83,8 +83,12 @@ async def generate(request: Request):
     feedbacks_model = FeedbacksModel()
     feedbacks_concluidos = feedbacks_model.find_feedback(objetivo_key=objetivo_key)
 
-    feedbacks_concluidos_data = [datetime.strptime(feedback.get("data_feedback"), "%d/%m/%Y").strftime("%Y-%m-%d") for
-                                 feedback in feedbacks_concluidos]
+    feedbacks_concluidos_data = [
+        datetime.strptime(feedback.get("data_feedback"), "%d/%m/%Y").strftime(
+            "%Y-%m-%d"
+        )
+        for feedback in feedbacks_concluidos
+    ]
 
     for feedback_data in feedbacks_concluidos_data:
         if feedback_data in feedbacks_pendentes:
@@ -92,10 +96,7 @@ async def generate(request: Request):
 
     return JSONResponse(
         status_code=200,
-        content={
-            "concluidos": feedbacks_concluidos,
-            "pendentes": feedbacks_pendentes
-        },
+        content={"concluidos": feedbacks_concluidos, "pendentes": feedbacks_pendentes},
     )
 
 
@@ -118,16 +119,23 @@ async def get_feedbacks(request: Request):
 
     feedbacks_concluidos_ok = []
     for feedbacks_concluido in feedbacks_concluidos:
-        feedbacks_concluidos_ok.append({
-            "key": feedbacks_concluido.get("_key"),
-            "data": feedbacks_concluido.get("data_feedback"),
-            "observacao": feedbacks_concluido.get("observacao"),
-        })
+        feedbacks_concluidos_ok.append(
+            {
+                "key": feedbacks_concluido.get("_key"),
+                "data": feedbacks_concluido.get("data_feedback"),
+                "observacao": feedbacks_concluido.get("observacao"),
+            }
+        )
 
     data_inicio = objetivo.get("data_inicio")
     feedbacks_pendentes = datas_anteriores(data=data_inicio)
 
-    feedbacks_concluidos_data = [datetime.strptime(feedback.get("data_feedback"), "%d/%m/%Y").strftime("%Y-%m-%d") for feedback in feedbacks_concluidos]
+    feedbacks_concluidos_data = [
+        datetime.strptime(feedback.get("data_feedback"), "%d/%m/%Y").strftime(
+            "%Y-%m-%d"
+        )
+        for feedback in feedbacks_concluidos
+    ]
 
     for feedback_data in feedbacks_concluidos_data:
         if feedback_data in feedbacks_pendentes:
@@ -137,7 +145,6 @@ async def get_feedbacks(request: Request):
         status_code=200,
         content={
             "concluidos": feedbacks_concluidos_ok,
-            "pendentes": ordenar_datas(feedbacks_pendentes)
+            "pendentes": ordenar_datas(feedbacks_pendentes),
         },
     )
-

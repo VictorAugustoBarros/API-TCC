@@ -15,7 +15,9 @@ async def get_solicitacao_amizade(request: Request):
         user_data = request.state.token
 
         notificacoes_model = NotificacoesModel()
-        notificacoes = notificacoes_model.find_notificacao(user_key=user_data.get("key"), amizade=False)
+        notificacoes = notificacoes_model.find_notificacao(
+            user_key=user_data.get("key"), amizade=False
+        )
 
         return JSONResponse(
             status_code=200,
@@ -36,7 +38,9 @@ async def get_solicitacao_amizade(request: Request):
         user_data = request.state.token
 
         notificacoes_model = NotificacoesModel()
-        notificacoes = notificacoes_model.find_notificacao(user_key=user_data.get("key"), amizade=True)
+        notificacoes = notificacoes_model.find_notificacao(
+            user_key=user_data.get("key"), amizade=True
+        )
         if not notificacoes:
             return JSONResponse(
                 status_code=200,
@@ -62,7 +66,9 @@ async def find_friend_request(request: Request):
         user_data = request.state.token
 
         notificacoes_model = NotificacoesModel()
-        notificacoes = notificacoes_model.find_friend_requests(user_from_key=user_data.get("key"))
+        notificacoes = notificacoes_model.find_friend_requests(
+            user_from_key=user_data.get("key")
+        )
 
         return JSONResponse(
             status_code=200,
@@ -131,7 +137,7 @@ async def get_user_card(request: Request):
         notificaco = Notificacao(
             user_key_origem=user_data.get("key"),
             user_key_destinatario=user.get("_key"),
-            amizade=True
+            amizade=True,
         )
         notificacoes_model.create_notificacao(notificaco)
 
@@ -161,7 +167,7 @@ async def get_user_card(request: Request):
         notificaco = Notificacao(
             user_key_origem=user_data.get("key"),
             user_key_destinatario=user.get("_key"),
-            descricao=request_body.get("descricao")
+            descricao=request_body.get("descricao"),
         )
         notificacoes_model.create_notificacao(notificaco)
 

@@ -94,7 +94,9 @@ async def get_user(request: Request):
         friend_request = notificacao_model.has_send_notificao(user_key=user.get("_key"))
 
         user_amigo_model = UsersAmigosModel()
-        is_friend = user_amigo_model.is_friend(user_id=user_token.get("id"), user_id_find=user.get("_id"))
+        is_friend = user_amigo_model.is_friend(
+            user_id=user_token.get("id"), user_id_find=user.get("_id")
+        )
 
         return JSONResponse(
             status_code=200,

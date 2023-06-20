@@ -27,11 +27,13 @@ class NotificacoesModel(ArangoDB):
         notificacoes_ok = []
         notificacoes = self.aql_query(aql=aql_query)
         for notificacao in notificacoes:
-            notificacoes_ok.append({
-                "key": notificacao.get("_key"),
-                "amizade": notificacao.get("amizade"),
-                "descricao": notificacao.get("descricao"),
-            })
+            notificacoes_ok.append(
+                {
+                    "key": notificacao.get("_key"),
+                    "amizade": notificacao.get("amizade"),
+                    "descricao": notificacao.get("descricao"),
+                }
+            )
 
         return notificacoes_ok
 
@@ -61,10 +63,12 @@ class NotificacoesModel(ArangoDB):
         friend_requests_ok = []
         friend_requests = self.aql_query(aql=aql_query)
         for friend_request in friend_requests:
-            friend_requests_ok.append({
-                "key": friend_request.get("notificaco").get("_key"),
-                "username": friend_request.get("username")
-            })
+            friend_requests_ok.append(
+                {
+                    "key": friend_request.get("notificaco").get("_key"),
+                    "username": friend_request.get("username"),
+                }
+            )
 
         return friend_requests_ok
 

@@ -9,7 +9,11 @@ class UsersAmigosModel(ArangoDB):
         super().__init__(collection=self.collection_name, edge=True)
 
     def insert_user_amigos(self, user_id: str, amigo_id: str):
-        aresta = {"_from": user_id, "_to": amigo_id, "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+        aresta = {
+            "_from": user_id,
+            "_to": amigo_id,
+            "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        }
         return self.insert(**aresta)
 
     def delete_user_amigos(self, user_amigo_key: str):
@@ -48,7 +52,7 @@ class UsersAmigosModel(ArangoDB):
         """
         documents = self.aql_query(aql=aql_query)
         for document in documents:
-            document.get("user")['data'] = document.get("data")
+            document.get("user")["data"] = document.get("data")
 
             document_ok = remove_critical_data(
                 data=document.get("user"),
@@ -59,3 +63,33 @@ class UsersAmigosModel(ArangoDB):
             document.update(document_ok)
 
         return [document for document in documents]
+
+    def find_relacionamentos_sugestao(self, user_id: str):
+        aql_query = f"""
+            LET startVertex = '{user_id}'
+            FOR v, e, p IN 1..2 OUTBOUND startVertex {self.collection_name}
+                LIMIT 5
+                FILTER e._to == v._id 
+                FILTER v._id != startVertex
+                RETURN DISTINCT v
+        """
+        documents = self.aql_query(aql=aql_query)
+        amigos = []
+        for document in documents:
+            document_ok = remove_critical_data(
+                data=document,
+                remove_data=[
+                    "_key",
+                    "_rev",
+                    "password",
+                    "followers",
+                    "following",
+                    "user_banner",
+                ],
+            )
+
+            document_ok.update({"enviarSolicitacaoAtivo": True})
+
+            amigos.append(document_ok)
+
+        return amigos

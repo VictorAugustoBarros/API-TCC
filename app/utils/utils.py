@@ -28,7 +28,7 @@ def contar_registros_por_mes(datas):
         "Setembro": 0,
         "Outubro": 0,
         "Novembro": 0,
-        "Dezembro": 0
+        "Dezembro": 0,
     }
 
     meses_em_portugues = {
@@ -43,7 +43,7 @@ def contar_registros_por_mes(datas):
         "September": "Setembro",
         "October": "Outubro",
         "November": "Novembro",
-        "December": "Dezembro"
+        "December": "Dezembro",
     }
 
     for data in datas:
@@ -72,7 +72,9 @@ def datas_anteriores(data):
 
 
 def ordenar_datas(lista_datas):
-    datas_convertidas = [datetime.strptime(data, "%Y-%m-%d").date() for data in lista_datas]
+    datas_convertidas = [
+        datetime.strptime(data, "%Y-%m-%d").date() for data in lista_datas
+    ]
     datas_ordenadas = sorted(datas_convertidas)
     datas_formatadas = [data.strftime("%d/%m/%Y") for data in datas_ordenadas]
     return datas_formatadas

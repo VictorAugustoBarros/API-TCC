@@ -20,7 +20,9 @@ async def get_evolucao(request: Request):
         user_data = request.state.token
 
         objetivos_usuario_model = ObjetivosUsuarioModel()
-        objetivos = objetivos_usuario_model.get_objetivo_user(user_id=user_data.get("id"))
+        objetivos = objetivos_usuario_model.get_objetivo_user(
+            user_id=user_data.get("id")
+        )
 
         objetivos_evolucao = {
             "quantidade": {
@@ -28,7 +30,9 @@ async def get_evolucao(request: Request):
                 "Objetivos em andamento": len(objetivos),
                 "Objetivos cancelados": 0,
             },
-            "quantidade_mes": contar_registros_por_mes([objetivo.get("data_inicio") for objetivo in objetivos]),
+            "quantidade_mes": contar_registros_por_mes(
+                [objetivo.get("data_inicio") for objetivo in objetivos]
+            ),
             "categorias": {},
         }
         for objetivo in objetivos:
@@ -60,7 +64,9 @@ async def get_evolucao_amizades(request: Request):
 
         amigos_evolucao = {
             "quantidade": len(amigos),
-            "quantidade_mes": contar_registros_por_mes([amigo.get("data") for amigo in amigos]),
+            "quantidade_mes": contar_registros_por_mes(
+                [amigo.get("data") for amigo in amigos]
+            ),
         }
 
         return JSONResponse(
@@ -86,12 +92,35 @@ async def get_evolucao_feedbacks(request: Request):
 
         feedbacks_evolucao = {
             "quantidade": len(feedbacks),
-            "quantidade_mes": contar_registros_por_mes([feedback.get("data_insert") for feedback in feedbacks]),
+            "quantidade_mes": contar_registros_por_mes(
+                [feedback.get("data_insert") for feedback in feedbacks]
+            ),
         }
 
         return JSONResponse(
             status_code=200,
             content=feedbacks_evolucao,
+        )
+
+    except Exception as error:
+        return JSONResponse(
+            status_code=400,
+            content={"message": "Falha ao buscar informações!"},
+        )
+
+
+@routes_evolucao.get("/api/evolucao/feedbacks/{objetivo_key}")
+@token_validation
+async def get_evolucao_feedbacks(request: Request):
+    try:
+        objetivo_key = request.path_params.get("objetivo_key")
+
+        feedbacks_model = FeedbacksModel()
+        feedbacks = feedbacks_model.find_feedback(objetivo_key=objetivo_key)
+
+        return JSONResponse(
+            status_code=200,
+            content=feedbacks,
         )
 
     except Exception as error:

@@ -16,7 +16,10 @@ class InsertDocument:
 
 
 class ArangoDB:
-    default_arango_collections = {"Objetivos": {"edge": False}, "Feedbacks": {"edge": False}}
+    default_arango_collections = {
+        "Objetivos": {"edge": False},
+        "Feedbacks": {"edge": False},
+    }
 
     def __init__(self, collection: str, edge: bool = False):
         self.collection = collection

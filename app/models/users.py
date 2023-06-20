@@ -24,7 +24,10 @@ class UsersModel(ArangoDB):
         return self.insert(**user.__dict__)
 
     def find_user_email(self, email: str):
-        return self.find(data={"email": email})
+        user = self.find(data={"email": email})
+        if user:
+            return user[0]
+        return user
 
     def find_all_usernames(self):
         users = self.find_all()
@@ -42,6 +45,12 @@ class UsersModel(ArangoDB):
             return user[0]
         return user
 
+    def find_user_by_id(self, user_id: str):
+        user = self.find(data={"_id": user_id})
+        if user:
+            return user[0]
+        return user
+
     def update_user(self, key: str, user: dict):
         self.update(key=key, data=user)
 
@@ -53,3 +62,6 @@ class UsersModel(ArangoDB):
         if user:
             return user[0]
         return user
+
+    def update_password(self, user_key: str, password: str):
+        self.update(key=user_key, data={"password": password})
